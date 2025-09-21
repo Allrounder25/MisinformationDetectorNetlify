@@ -4,20 +4,13 @@ import google.generativeai as genai
 import base64
 from datetime import datetime
 
-# Read the API key from gemini.md
-api_key_path = os.path.join(os.path.dirname(__file__), '..', '..', 'gemini.md')
-if os.path.exists(api_key_path):
-    with open(api_key_path, "r") as f:
-        API_KEY = f.read().strip()
+
+
+API_KEY = os.environ.get('GEMINI_API_KEY')
+if API_KEY:
     genai.configure(api_key=API_KEY)
 else:
-    # If the file doesn't exist, try to get the API key from environment variables
-    API_KEY = os.environ.get('GEMINI_API_KEY')
-    if API_KEY:
-        genai.configure(api_key=API_KEY)
-    else:
-        # If the API key is not found, the functions will return an error.
-        pass
+    pass
 
 prompt_query = """Prioritize highly reliable and authoritative sources for your analysis. 
 
@@ -63,7 +56,7 @@ def _clean_json_response(text: str) -> str:
         text = text[:-3]
     return text.strip()
 
-def get_gemini_response(text: str, url: str, model_name: str = 'gemini-1.5-flash') -> dict:
+def get_gemini_response(text: str, url: str, model_name: str = 'gemini-2.5-flash') -> dict:
     if not API_KEY:
         return {"error": "Gemini API key not configured."}
     try:
@@ -91,7 +84,7 @@ Text to analyze:
     except Exception as e:
         return {"error": f"An error occurred while requesting from Gemini API: {e}"}
 
-def get_gemini_response_for_image(image_data: str, url: str, model_name: str = 'gemini-1.5-flash') -> dict:
+def get_gemini_response_for_image(image_data: str, url: str, model_name: str = 'gemini-2.5-flash') -> dict:
     if not API_KEY:
         return {"error": "Gemini API key not configured."}
     try:
